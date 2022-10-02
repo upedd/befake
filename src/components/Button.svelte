@@ -35,7 +35,7 @@ on:click>
     <button
         {...$$restProps}
         disabled={isLoading}
-        class=" text-black font-bold text-lg py-2 px-3 rounded-lg bg-white hover:bg-gray-100 active:bg-gray-200 focus:ring-1 focus:outline-none focus:ring-gray-400 border border-white focus:border-gray-400"
+        class=" text-black w-full font-bold text-lg py-2 px-3 rounded-lg bg-white hover:bg-gray-100 active:bg-gray-200 focus:ring-1 focus:outline-none focus:ring-gray-400 border border-white focus:border-gray-400"
     >
         <span style="opacity: {isLoading ? 0.0 : 1.0};">{label}</span>
     </button>

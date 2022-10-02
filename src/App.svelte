@@ -53,7 +53,7 @@
 <TailwindCss />
 
 <main class="w-screen min-h-screen bg-black text-white">
-  <div class="container mx-auto flex items-center flex-col">
+  <div class="container mx-auto">
     {#if currentScreen == "login/sendotp"}
       <SendOtpScreen />
     {:else if currentScreen == "login/verifyotp"}

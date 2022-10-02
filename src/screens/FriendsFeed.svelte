@@ -3,13 +3,14 @@
     import { getFriendFeed } from "../bereal-api";
     import { formatSeconds, timeFromTimestamp } from "../util";
     import BeRealSkeleton from "../components/BeRealSkeleton.svelte";
+    import Footer from "../components/Footer.svelte";
 
     let feedRequest = getFriendFeed();
 </script>
 
-<h1 class="font-bold text-4xl pt-4 block">BeFake.</h1>
+<h1 class="font-bold text-4xl pt-4 block text-center">BeFake.</h1>
 
-<div class="max-w-xl pl-2 pr-2 pb-2 min-h-screen">
+<div class="max-w-xl pl-2 pr-2 pb-2 mx-auto">
     {#await feedRequest}
         <BeRealSkeleton />
     {:then feedItems}
@@ -55,4 +56,5 @@
     {:catch error}
         <span class="text-pink-500 text-md block pt-1">{error.message}</span>
     {/await}
+    <Footer showLogout={true}/>
 </div>

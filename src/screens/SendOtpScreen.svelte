@@ -3,6 +3,7 @@
     import { sendotp } from "../bereal-api";
     import Button from "../components/Button.svelte";
     import Input from "../components/Input.svelte";
+    import LoginScreenTemplate from "../components/LoginScreenTemplate.svelte";
     let phoneNumber = "";
     let isLoading = false;
     let errorMessage;
@@ -12,8 +13,8 @@
         errorMessage = null;
         try {
             await sendotp(phoneNumber);
-            localStorage.setItem("phoneNumber", phoneNumber)
-            screen.update(_ => "login/verifyotp")
+            localStorage.setItem("phoneNumber", phoneNumber);
+            screen.update((_) => "login/verifyotp");
         } catch (error) {
             errorMessage = error.message;
         } finally {
@@ -22,23 +23,27 @@
     }
 </script>
 
-<h1 class="font-bold text-8xl block pt-16 pb-12">BeFake.</h1>
-<div>
-    <label for="phoneNumber" class="text-gray-200 text-md block pb-1"
+<LoginScreenTemplate>
+    <label for="phoneNumber" class="text-gray-200 text-md mb-1 block"
         >Enter your phone number:
     </label>
-    <div class="flex items-center">
+    <div class="flex items-center flex-col sm:flex-row w-full">
         <Input
             id="phoneNumber"
             placeholder="+00123456789"
             disabled={isLoading}
             type="tel"
+            class="w-full sm:min-w-[300px]"
             bind:value={phoneNumber}
         />
-        <!-- <button class="ml-2 text-black font-bold text-lg py-2 px-3 rounded-lg bg-white hover:bg-gray-100 active:bg-gray-200 focus:ring-1 focus:outline-none focus:ring-gray-400 border border-white focus:border-gray-400">SEND</button> -->
-        <Button {isLoading} label="SEND" class="ml-2" on:click={handleClick} />
+        <Button
+            {isLoading}
+            label="SEND"
+            class="mt-4 sm:ml-2 sm:mt-0 w-full"
+            on:click={handleClick}
+        />
     </div>
     {#if errorMessage}
         <span class="text-pink-500 text-md block pt-1">{errorMessage}</span>
     {/if}
-</div>
+</LoginScreenTemplate>

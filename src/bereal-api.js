@@ -1,3 +1,5 @@
+import {screen} from "./stores";
+
 const corsproxy = 'https://befake-cors-proxy.uped.workers.dev/corsproxy/?apiurl='
 const sendotpUrl = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/sendVerificationCode?key=AIzaSyDwjfEeparokD7sXPVQli9NsTuhT6fJ6iA'
 const verifyotpUrl = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPhoneNumber?key=AIzaSyDwjfEeparokD7sXPVQli9NsTuhT6fJ6iA'
@@ -55,19 +57,6 @@ export const verifyotp = async (code) => {
     localStorage.setItem("expiresAt", `${Math.floor(Date.now() / 1000) + +data.expiresIn}`)
 }
 
-export const getFriendFeed = async () => {
-    const token = localStorage.getItem("idToken")
-    const response = await myFetch(
-        `${berealApiUrl}/feeds/friends`,
-        {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-    )
-    return await response.json()
-}
 
 export const refreshToken = async () => {
     const _refreshToken = localStorage.getItem("refreshToken")
@@ -85,4 +74,49 @@ export const refreshToken = async () => {
     localStorage.setItem("idToken", data.id_token)
     localStorage.setItem("refreshToken", data.refresh_token)
     localStorage.setItem("expiresAt", `${Math.floor(Date.now() / 1000) + +data.expires_in}`)
+    return data.id_token;
+}
+
+export const getAuthToken = async () => {
+    const token = localStorage.getItem("idToken");
+    const expiresAt = +localStorage.getItem("expiresAt");
+
+    if (token && expiresAt) {
+        const currentTime = Math.floor(Date.now() / 1000);
+
+        if (currentTime < expiresAt) {
+            return token
+        } else {
+            console.log("trying to refresh token");
+            const _refreshToken = localStorage.getItem("refreshToken");
+            if (_refreshToken) {
+                console.log("refresh token found");
+                try {
+                    console.log("successfully refreshed token");
+                    return await refreshToken();
+                } catch (error) {
+                    console.error("refreshing token failed", error);
+                }
+            }
+        }
+    }
+    return null;
+}
+
+export const getFriendFeed = async () => {
+
+    const token = await getAuthToken()
+    if (!token) {
+        screen.set("login/sendotp")
+    }
+    const response = await myFetch(
+        `${berealApiUrl}/feeds/friends`,
+        {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    )
+    return await response.json()
 }

@@ -1,5 +1,6 @@
 <script>
-  import { refreshToken } from "./bereal-api";
+  import { onMount } from "svelte";
+  import { getAuthToken } from "./bereal-api";
   import FriendsFeed from "./screens/FriendsFeed.svelte";
   import SendOtpScreen from "./screens/SendOtpScreen.svelte";
   import VerifyOtpScreen from "./screens/VerifyOtpScreen.svelte";
@@ -7,43 +8,14 @@
   import TailwindCss from "./TailwindCSS.svelte";
   let currentScreen;
 
-  const token = localStorage.getItem("idToken");
-  const expiresAt = +localStorage.getItem("expiresAt");
-  // #TODO refactor
-  if (token && expiresAt) {
-    const currentTime = Math.floor(Date.now() / 1000);
-
-    if (currentTime < expiresAt) {
-      if (currentScreen != "feed/friends") {
-        screen.update((_) => "feed/friends");
-      }
-    } else {
-      console.log("trying to refresh token");
-      const _refreshToken = localStorage.getItem("refreshToken");
-      if (_refreshToken) {
-        console.log("refresh token found");
-        try {
-          refreshToken();
-          console.log("successfully refreshed token");
-          screen.update((_) => "feed/friends");
-        } catch (error) {
-          console.error("refreshing token failed", error);
-
-          if (currentScreen == "feed/friends") {
-            screen.update((_) => "login/sendotp");
-          }
-        }
-      } else {
-        if (currentScreen == "feed/friends") {
-          screen.update((_) => "login/sendotp");
-        }
-      }
+  onMount(async () => {
+    const token = getAuthToken();
+    if (token && currentScreen != "feed/friends") {
+      screen.set("feed/friends");
+    } else if (!token && currentScreen == "feed/friends") {
+      screen.set("login/otp");
     }
-  } else {
-    if (currentScreen == "feed/friends") {
-      screen.update((_) => "login/sendotp");
-    }
-  }
+  });
 
   screen.subscribe((s) => {
     currentScreen = s;
